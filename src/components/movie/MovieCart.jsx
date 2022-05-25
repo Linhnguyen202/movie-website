@@ -5,12 +5,13 @@ import Button from '../Button/Button';
 import PropTypes from 'prop-types';
 import {withErrorBoundary} from "react-error-boundary"
 import LoadingSkeleton from "../loading/loading"
-const MovieCart = ( { item} ) => {
+const MovieCart = ( {type = "movie", item} ) => {
     const {
         id,
         title,
         vote_average,
         release_date,
+        first_air_date,
         poster_path
     } = item
     const navigate = useNavigate();
@@ -20,10 +21,10 @@ const MovieCart = ( { item} ) => {
             <div className="flex flex-col flex-1">
                 <h3 className="mb-3 text-xl font-bold text-white">{title}</h3>
                 <div className="flex items-center justify-between mb-6 text-sm text-white opacity-50">
-                <span>{new Date(release_date).getFullYear()}</span>
+                <span>{new Date(release_date || first_air_date).getFullYear()}</span>
                 <span>{vote_average}</span>
                 </div>
-                <Button onClick={()=>navigate(`/movie/${id}`)} >Watch now</Button>
+                <Button onClick={()=>navigate(`/${type}/${id}`)} >Watch now</Button>
             </div> 
         </div>
     );

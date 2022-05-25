@@ -1,4 +1,4 @@
-import MoviePageV2 from "./pages/MoviePageV2";
+import MoviePageV2 from "./pages/TVPage";
 import { Fragment,lazy,Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import "swiper/scss"
@@ -7,6 +7,7 @@ import Header from "./components/layout/Header";
 import Main from "./components/layout/Main";
 import MovieCart from "./components/movie/MovieCart";
 import MovieList from "./components/movie/MovieList";
+import TVPage from "./pages/TVPage";
 const HomePage = lazy(()=>import("./pages/HomePage"))
 const MovieDetail = lazy(()=>import("./pages/MovieDetail"))
 const MoviePage = lazy(()=>import("./pages/MoviePage"))
@@ -17,8 +18,10 @@ function App() {
     <Routes>
       <Route element={<Main></Main>}>
           <Route path="/" element={<><Banner></Banner><HomePage></HomePage></>}></Route>
-          <Route path="/movies" element={<MoviePageV2></MoviePageV2>}></Route>
-          <Route path="/movie/:movieId" element={<MovieDetail></MovieDetail>}></Route>
+          <Route path="/movies" element={<MoviePage kind="movie"></MoviePage>}></Route>
+          <Route path="/tv" element={<TVPage kind="tv"></TVPage>}></Route>
+          <Route path="/movie/:movieId" element={<MovieDetail kind = "movie"></MovieDetail>}></Route>
+          <Route path="/tv/:movieId" element={<MovieDetail kind="tv"></MovieDetail>}></Route>
       </Route>
    </Routes>
     </Suspense>

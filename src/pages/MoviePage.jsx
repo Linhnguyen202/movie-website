@@ -1,22 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
-import ReactPaginate from 'react-paginate';// chuyen trang lam paginate
+// chuyen trang lam paginate
 import MovieCart, {MovieCartSkeleton} from '../components/movie/MovieCart';
-import MovieList from '../components/movie/MovieList';
 import { fetcher, tmdbAPI } from '../config';
-import useDebounce from '../hooks/useDebounce';
-import useSWRInfinite from 'swr/infinite'; // thu vien de dung load more
+import useDebounce from '../hooks/useDebounce'; // thu vien de dung load more
 import {v4} from "uuid" //lay id random
+import ReactPaginate from 'react-paginate';
 //https://api.themoviedb.org/3/search/movie?api_key=<<api_key>>
 
 const itemsPerPage = 20
-const MoviePage = () => {
+const MoviePage = ({kind}) => {
     const [pageCount, setPageCount] = useState(0);
     const [itemOffset, setItemOffset] = useState(0);
     // 
     const [nextPage,setNextPage] = useState(1)
     const [filter,setFilter] = useState("")
-    const [url,setUrl] = useState(tmdbAPI.getMovieList("popular",nextPage));
+    const [url,setUrl] = useState(tmdbAPI.getMovieList(kind,"popular",nextPage));
     const filterDebounce = useDebounce(filter,500)
     const handleFilterChange = (e)=>{
         setFilter(e.target.value)
@@ -34,21 +33,23 @@ const MoviePage = () => {
     },[data])
     useEffect(()=>{
         if(filterDebounce){
-            setUrl(tmdbAPI.getMovieSearch(filterDebounce,nextPage))
+            setUrl(tmdbAPI.getMovieSearch(kind,filterDebounce,nextPage))
         }
         else{
             
-            setUrl(tmdbAPI.getMovieList("popular",nextPage))
+            setUrl(tmdbAPI.getMovieList(kind,"popular",nextPage))
         }
     },[filterDebounce,nextPage])
     // const {page,totals_pages} = data
     useEffect(() => {
-        if(!data || !data.total_results) return;           
+        console.log(data)
+        if(!data || !data.total_results) return; 
+        setPageCount(Math.ceil(data.total_results / itemsPerPage))          
        }, [data,itemOffset]);
      
        // Invoke when user click to request another page.
        const handlePageClick = (event) => {
-         const newOffset = (event.selected * itemsPerPage) % data.total_pages;
+         const newOffset = (event.selected * itemsPerPage) % data.total_results;
          setItemOffset(newOffset);
          setNextPage(event.selected + 1)
        };
@@ -81,10 +82,9 @@ const MoviePage = () => {
                     )
                 })}
             </div>
-           
+            
             </div>
             }
-            
             <div className="mt-10">
                 <ReactPaginate
                     breakLabel="..."
@@ -97,7 +97,6 @@ const MoviePage = () => {
                     className="pagination"
                 />
             </div>
-            
        </div>
     );
 };

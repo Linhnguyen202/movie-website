@@ -6,9 +6,10 @@ import useSWR from 'swr';
 import MovieCart from '../components/movie/MovieCart';
 import { fetcher, tmdbAPI } from '../config';
 // https://api.themoviedb.org/3/movie/{movie_id}?api_key=<<api_key>>
-const MovieDetail = () => {
+const MovieDetail = ({kind = "movie"}) => {
     const { movieId } = useParams()
-    const {data,error} = useSWR(tmdbAPI.getMovieDetail(movieId),fetcher)
+    console.log(movieId)
+    const {data,error} = useSWR(tmdbAPI.getMovieDetail(kind,movieId),fetcher)
     if(!data) return null
     const {backdrop_path,poster_path,title ,genres, overview} = data
     
@@ -22,8 +23,8 @@ const MovieDetail = () => {
                 backgroundImage:`url(${tmdbAPI.imageOriginal(backdrop_path)})`
             }}></div>
             </div>
-            <div className="w-full h-[300px] max-w-[800px] mx-auto -mt-[200px] z-10 relative pb-10">
-                <img src={tmdbAPI.imageOriginal(poster_path)} className='object-cover w-full h-full rounded-xl' alt="" />
+            <div className="w-full h-[600px] max-w-[500px] mx-auto -mt-[200px] z-10 relative pb-10">
+                <img src={tmdbAPI.imageOriginal(poster_path)} className='w-full h-full object-fit rounded-xl' alt="" />
             </div>
             <h1 className='mb-10 text-3xl font-bold text-center text-white'>{title}</h1>    
             {genres.length > 0 &&  <div className="flex items-center justify-center mb-10 gap-x-5">
@@ -32,18 +33,18 @@ const MovieDetail = () => {
                 ))}
             </div>}
             <p className="text-sm text-center leading-relaxed max-w-[600px] mx-auto mb-10">{overview}</p>
-            <MovieMeta type="credits"></MovieMeta>
-            <MovieMeta type="videos"></MovieMeta>
-            <MovieMeta type="similar"></MovieMeta>
+            <MovieMeta kind={kind} type="credits"></MovieMeta>
+            <MovieMeta kind={kind} type="videos"></MovieMeta>
+            <MovieMeta kind={kind} type="similar"></MovieMeta>
         </div>}
             
         </>
     );
 };
-function MovieMeta({type = "videos"}){
+function MovieMeta({kind,type = "videos"}){
     const { movieId } = useParams()
-    const {data,error} = useSWR(tmdbAPI.getMovieCast(movieId,type),fetcher)
-    console.log(data)
+    console.log(movieId)
+    const {data,error} = useSWR(tmdbAPI.getMovieCast(kind,movieId,type),fetcher)
     if(!data) return null; 
     if(type === "credits"){
         const { cast } = data
@@ -122,32 +123,4 @@ function MovieMeta({type = "videos"}){
        
     
 }
-// function MovieCredit(){
-//     const { movieId } = useParams()
-//     const {data,error} = useSWR(tmdbAPI.getMovieCast(movieId,"credits"),fetcher)
-//     if(!data) return null;
-//     const { cast } = data;
-//     if(!cast && cast.length <= 0) return null
-//     return (
-       
-//     )
-// }
-// function MovieVideo(){
-//     const { movieId } = useParams()
-//     const {data,error} = useSWR(tmdbAPI.getMovieCast(movieId,"videos"),fetcher)
-//     console.log(data)
-//     if(!data) return null;
-//     const { results } = data;
-//     return 
-
-// }
-// function MovieSimilar(){
-//     const { movieId } = useParams()
-//     const {data,error} = useSWR(tmdbAPI.getMovieCast(movieId,"similar"),fetcher)
-//     if(!data) return null;
-//     const { results } = data;
-//     return (
-        
-//     )
-// }
 export default MovieDetail;

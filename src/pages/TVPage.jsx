@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import useSWR from 'swr';
-import ReactPaginate from 'react-paginate';
 import MovieCart, {MovieCartSkeleton} from '../components/movie/MovieCart';
-import MovieList from '../components/movie/MovieList';
-import { fetcher, tmdbAPI } from '../config';
+import { fetcher, tmdbAPI, tmdbAPITv } from '../config';
 import useDebounce from '../hooks/useDebounce';
 import useSWRInfinite from 'swr/infinite';
 import {v4} from "uuid"
-//https://api.themoviedb.org/3/search/movie?api_key=<<api_key>>
+
 const itemsPerPage = 20
-const MoviePageV2 = () => {
+const MoviePageV2 = ({kind="tv"}) => {
     const [pageCount, setPageCount] = useState(0);
     const [itemOffset, setItemOffset] = useState(0);
     // 
     const [nextPage,setNextPage] = useState(1)
     const [filter,setFilter] = useState("")
-    const [url,setUrl] = useState(tmdbAPI.getMovieList("popular",nextPage));
+    const [url,setUrl] = useState(tmdbAPI.getMovieList(kind,"popular",nextPage));
     const filterDebounce = useDebounce(filter,500)
     const handleFilterChange = (e)=>{
         setFilter(e.target.value)
@@ -40,11 +37,11 @@ const MoviePageV2 = () => {
     },[data])
     useEffect(()=>{
         if(filterDebounce){
-            setUrl(tmdbAPI.getMovieSearch(filterDebounce,nextPage))
+            setUrl(tmdbAPI.getMovieSearch(kind,filterDebounce,nextPage))
         }
         else{
             
-            setUrl(tmdbAPI.getMovieList("popular",nextPage))
+            setUrl(tmdbAPI.getMovieList(kind,"popular",nextPage))
         }
     },[filterDebounce,nextPage])
     // const {page,totals_pages} = data
@@ -63,7 +60,6 @@ const MoviePageV2 = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg></button>
             </div>
-            {/* {loading && <div className='w-10 h-10 mx-auto border border-4 border-t-4 rounded-full border-primary border-t-transparent animate-spin'></div>} */}
             {loading && <div className="grid grid-cols-4 gap-10">
                 {new Array(itemsPerPage).fill(0).map(()=>{
                     return (
@@ -74,7 +70,7 @@ const MoviePageV2 = () => {
             {!loading && <div><div className="grid grid-cols-4 gap-10">
                   {movies  && movies.length  > 0 && movies.map(item=>{
                     return (
-                        <MovieCart key={item.id} item={item}></MovieCart>
+                        <MovieCart type="tv" key={item.id} item={item}></MovieCart>
                     )
                 })}
             </div>

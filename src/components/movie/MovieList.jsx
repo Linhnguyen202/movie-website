@@ -5,10 +5,10 @@ import useSWR from 'swr';
 import { fetcher, tmdbAPI } from '../../config';
 import MovieCart, { MovieCartSkeleton } from './MovieCart';
 //https://api.themoviedb.org/3/movie/now_playing?api_key=d239edfabc54edf26e7cec35b25d50c7
-const MovieList = ({type = 'now_playing'}) => {
+const MovieList = ({kind = "movie",type = 'now_playing'}) => {
     const [movies, setMovies] = useState([])
     const { data, error } = useSWR(
-        tmdbAPI.getMovieList(type), fetcher)
+        tmdbAPI.getMovieList(kind,type), fetcher)
     const isLoading = !data && !error
     useEffect(()=>{
         console.log(data)
